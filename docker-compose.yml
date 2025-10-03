@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: test-runner
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app      # Mount project folder (for dev)
+      - /app/node_modules
+    command: node src/index.js
