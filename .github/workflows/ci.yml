@@ -21,8 +21,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/test-runner:latest .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/test-runner:latest .
 
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/test-runner:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/test-runner:latest
