@@ -1,46 +1,28 @@
-name: CI Test Node.js Docker
+name: Build and Push Docker Image
 
 on:
   push:
     branches:
-      - main
-  pull_request:
+      - main  # run pipeline on pushes to main branch
 
 jobs:
-  build-test:
-    runs-on: self-hosted
+  docker:
+    runs-on: ubuntu-latest
+
     steps:
-      # Step 1: Checkout code
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js (optional, if using node locally)
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
         with:
-          node-version: "20"
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Step 3: Install dependencies
-      - name: Install npm dependencies
-        run: npm install
-
-      # Step 4: Lint / Run tests (optional)
-      - name: Run simple test
-        run: node src/index.js & sleep 5
-
-      # Step 5: Build Docker image
       - name: Build Docker image
-        run: docker build -t test-runner .
-
-      # Step 6: Run Docker container
-      - name: Run Docker container
         run: |
-          docker run -d --name test-runner -p 3000:3000 test-runner
-          docker ps
-          docker logs test-runner
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/test-runner:latest .
 
-      # Step 7: Stop and remove container
-      - name: Cleanup
+      - name: Push Docker image
         run: |
-          docker stop test-runner
-          docker rm test-runner
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/test-runner:latest
