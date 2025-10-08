@@ -3,18 +3,16 @@ name: Build, Scan, and Push Docker Image
 on:
   push:
     branches:
-      - main  # Run pipeline on pushes to main branch
+      - main
 
 jobs:
   build-scan-push:
-    # Use your self-hosted runner
     runs-on: self-hosted 
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # Required for SonarQube to analyze branch history
           fetch-depth: 0  
 
       - name: Log in to Docker Hub
@@ -26,6 +24,10 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/test-runner:latest .
+
+      # --- ADD THIS NEW STEP ---
+      - name: Install Unzip
+        run: sudo apt-get update && sudo apt-get install -y unzip
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
